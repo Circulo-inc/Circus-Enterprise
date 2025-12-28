@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circus Enterprise</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.container {
+    width: 100%;
+    padding: 20px;
+}
+
+input {
+    padding: 12px;
+    width: 80%;
+    max-width: 300px;
+    font-size: 16px;
+    margin-top: 15px;
+    background-color: black;
+    color: #ff0000;
+    border: 2px solid #ff0000;
+    text-align: center;
+    outline: none;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: black;
+    color: #ff0000;
+    border: 2px solid #ff0000;
+}
+
+.mensagem {
+    margin-top: 15px;
+    color: #ff0000;
+}
+
+#historia {
+    color: white;
+}
+
+.shake {
+    animation: shake 0.25s;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
+    100% { transform: translateX(0); }
+}
+.red { color: red; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div>
+        <input type="text" id="senha" placeholder="Digite a senha">
+        <br>
+        <button onclick="verificarSenha()">Entrar</button>
+    </div>
+
+    <div class="mensagem" id="mensagem"></div>
+    <div class="mensagem" id="historia"></div>
+
+</div>
+
+<script>
+let tentativas = 0;
+const senhaCorreta = "comediadellarte";
+
+const grupos = [
+  { chaves: ["ivan","rurik","ivan rurik","equalizer","medaline","guadalupe","medaline guadalupe"], texto: "Você será o primeiro." },
+  { chaves: ["gyro","miura","gyro miura","link","alex","valentine","alex valentine"], texto: "Meu problema não é com você." },
+  { chaves: ["lyra","agapi","lyra agapi","loveletters","mei","wang","mei wang"], texto: "Você podia ter feito algo." },
+  { chaves: ["cotton candy"], texto: "..." }
+];
+
+const historiaTexto = [
+  ["Era uma vez, em um mundo um tanto quanto ", "i", "mpossível, havia uma jovem bailari", "n", "a."],
+  ["\n\nEla vivia em um grande e fantasioso ", "c", "irco, de que nã", "o", " podia de jeito algum deixar, não podendo sair da ", "g", "rande tenda."],
+  ["\n\nPara que ", "n", "ão se sent", "i", "sse só, os que moravam naquele mundo a visitavam para assistir seus espetáculos."],
+  ["\n\nSe encan", "t", "avam toda vez com sua graciosa dança e potente voz."],
+  ["\n\nPor decisão de todas as almas que ali viviam, eles a nomearam ", "a", " terceira Deusa."]
+];
+
+function verificarSenha() {
+    const senhaInput = document.getElementById("senha");
+    const senhaDigitada = senhaInput.value.toLowerCase().trim();
+    const mensagem = document.getElementById("mensagem");
+    const historia = document.getElementById("historia");
+    const tela = document.querySelector(".container");
+
+    let encontrou = false;
+
+    for (let grupo of grupos) {
+        if (grupo.chaves.includes(senhaDigitada)) {
+            escreverTexto(mensagem, grupo.texto);
+            encontrou = true;
+            break;
+        }
+    }
+
+    if (!encontrou && senhaDigitada === senhaCorreta) {
+        escreverHistoria(historia);
+        mensagem.textContent = "";
+        senhaInput.value = "";
+        return;
+    }
+
+    if (!encontrou && senhaDigitada !== senhaCorreta) {
+        tentativas++;
+        tela.classList.add("shake");
+        setTimeout(() => tela.classList.remove("shake"), 300);
+
+        if (tentativas === 1) escreverTexto(mensagem, "Senha incorreta, tente novamente.");
+        else escreverTexto(mensagem, "Você tem a senha, Beta Tester.");
+    }
+
+    senhaInput.value = "";
+}
+
+function escreverTexto(elemento, texto) {
+    elemento.textContent = "";
+    let i = 0;
+    const intervalo = setInterval(() => {
+        if (i < texto.length) {
+            elemento.textContent += texto.charAt(i);
+            i++;
+        } else clearInterval(intervalo);
+    }, 50);
+}
+
+function escreverHistoria(elemento) {
+    elemento.innerHTML = "";
+    let linha = 0;
+    let parte = 0;
+    let letra = 0;
+
+    const intervalo = setInterval(() => {
+        if (linha >= historiaTexto.length) {
+            clearInterval(intervalo);
+            return;
+        }
+
+        const bloco = historiaTexto[linha][parte];
+
+        if (letra < bloco.length) {
+            const span = document.createElement("span");
+            if (parte % 2 === 1) span.className = "red";
+            span.textContent = bloco[letra];
+            elemento.appendChild(span);
+            letra++;
+        } else {
+            parte++;
+            letra = 0;
+            if (parte >= historiaTexto[linha].length) {
+                elemento.appendChild(document.createElement("br"));
+                elemento.appendChild(document.createElement("br"));
+                linha++;
+                parte = 0;
+            }
+        }
+    }, 40);
+}
+</script>
+
+</body>
+</html>
